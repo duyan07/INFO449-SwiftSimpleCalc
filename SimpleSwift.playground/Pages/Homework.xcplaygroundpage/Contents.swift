@@ -27,14 +27,124 @@ print("Welcome to the UW Calculator Playground")
 //: For this latter set of operations, it is safe to assume that `["count"]` (with no additional arguments) is 0, `["avg"]` is also 0, and `["fact"]` is 0. `["1", "fact"]` should return 1, and `["0", "fact"]` should also return 1. (Yes, 0-factorial is 1. True story.)
 //: 
 func calculate(_ args: [String]) -> Int {
-    return -1
+    var op = ""
+    var numbers = [] as [Int]
+    for token in args {
+        if let number = Int(token) {
+            numbers.append(number)
+        } else {
+            op = String(token)
+        }
+    }
+    if ["+", "-", "*", "/", "%"].contains(op) && numbers.count >= 2 {
+        var value = numbers[0]
+        switch op {
+            case "+":
+                value += numbers[1]
+            case "-":
+                value -= numbers[1]
+            case "*":
+                value *= numbers[1]
+            case "%":
+                value %= numbers[1]
+            case "/":
+                if numbers[1] != 0 {
+                    value /= numbers[1]
+                }
+            default:
+                value = 0
+            }
+        return value
+    } else {
+        switch op {
+            case "count":
+                return numbers.count
+        case "avg":
+            guard numbers.count > 0 else {
+                return 0
+            }
+            let sum = numbers.reduce(0, +)
+            return sum / numbers.count
+        case "fact":
+            guard !numbers.isEmpty else { return 0 }
+            let num = numbers[0]
+            if num <= 1 {
+                return 1
+            }
+            var result = 1
+            for i in 2...num {
+                result *= i
+            }
+            return result
+            default:
+                return 0
+        }
+    }
 }
 
 func calculate(_ arg: String) -> Int {
-    return -1
+    var op = ""
+    var numbers = [] as [Int]
+    for token in arg.split(separator: " ") {
+        if let number = Int(token) {
+            numbers.append(number)
+        } else {
+            op = String(token)
+        }
+    }
+    
+    guard !numbers.isEmpty else {
+        return 0
+    }
+    
+    if ["+", "-", "*", "/", "%"].contains(op) && numbers.count >= 2 {
+        var value = numbers[0]
+        switch op {
+            case "+":
+                value += numbers[1]
+            case "-":
+                value -= numbers[1]
+            case "*":
+                value *= numbers[1]
+            case "%":
+                value %= numbers[1]
+            case "/":
+                if numbers[1] != 0 {
+                    value /= numbers[1]
+                }
+            default:
+                value = 0
+            }
+        return value
+    } else {
+        switch op {
+            case "count":
+                return numbers.count
+        case "avg":
+            guard numbers.count > 0 else {
+                return 0
+            }
+            let sum = numbers.reduce(0, +)
+            return sum / numbers.count
+        case "fact":
+            guard !numbers.isEmpty else { return 0 }
+            let num = numbers[0]
+            if num <= 1 {
+                return 1
+            }
+            var result = 1
+            for i in 2...num {
+                result *= i
+            }
+            return result
+            default:
+                return 0
+        }
+    }
 }
 
 //: Below this are the test expressions/calls to verify if your code is correct.
+//:
 //: ***DO NOT MODIFY ANYTHING BELOW THIS***
 //: -------------------------------------------
 //: All of these expressions should return true
@@ -76,13 +186,15 @@ calculate("1 2 3 4 5 avg") == 3
 calculate("5 fact") == 120
 
 //: -------------------------------------------
-//: These are extra credit tests; they are commented out so that they do not conflict with you work until you choose to implement them.
-//: Uncomment them to turn them on for evaluation
+//: These are extra credit tests; they are commented out 
+//: so that they do not conflict with you work until you 
+//: choose to implement them.
+//: Uncomment them to turn them on for evaluation.
 //:
 //: Implement `calculate([String])` and `calculate(String)` to handle negative numbers. You need only make the tests below pass. (You do not need to worry about "fact"/factorial with negative numbers, for example.)
 //:
 //: This is worth 1 pt
-/*
+
 calculate(["2", "+", "-2"]) == 0
 calculate(["2", "-", "-2"]) == 4
 calculate(["2", "*", "-2"]) == -4
@@ -97,19 +209,143 @@ calculate("2 - -2") == 4
 calculate("-2 / 2") == -1
 
 calculate("1 -2 3 -4 5 count") == 5
-*/
+
  
-//: Implement `calculate([String])` and `calculate(String)` to use and return floating-point values. You need only make the tests below pass. (Factorial of floating-point numbers doesn't make much sense, either.)
+//: Implement `calculate([String])` and `calculate(String)` to use 
+//: and return floating-point values. You need only make the tests 
+//: below pass. (Factorial of floating-point numbers doesn't make 
+//: much sense, either.)
 //:
-//: Swift *will* allow you to overload based on return times, so the below functions can co-exist simultaneously with the Integer-based versions above.
+//: Swift *will* allow you to overload based on return types, so 
+//: the below functions can co-exist simultaneously with the 
+//: Integer-based versions above.
 //: 
 //: This is worth 1 pt
-/*
+
 func calculate(_ args: [String]) -> Double {
-    return -1.0
+    var op = ""
+    var numbers = [] as [Double]
+    for token in args {
+        if let number = Double(token) {
+            numbers.append(number)
+        } else {
+            op = String(token)
+        }
+    }
+    
+    guard !numbers.isEmpty else {
+        return 0.0
+    }
+    
+    if ["+", "-", "*", "/", "%"].contains(op) && numbers.count >= 2 {
+        var value = numbers[0]
+        switch op {
+        case "+":
+            value += numbers[1]
+        case "-":
+            value -= numbers[1]
+        case "*":
+            value *= numbers[1]
+        case "%":
+            if numbers[1] != 0 {
+                value = value.truncatingRemainder(dividingBy: numbers[1])
+            }
+        case "/":
+            if numbers[1] != 0 {
+                value /= numbers[1]
+            }
+        default:
+            value = 0
+        }
+        return Double(value)
+    } else {
+        switch op {
+            case "count":
+                return Double(numbers.count)
+        case "avg":
+            guard numbers.count > 0 else {
+                return 0
+            }
+            let sum = numbers.reduce(0, +)
+            return sum / Double(numbers.count)
+        case "fact":
+            guard !numbers.isEmpty else { return 0 }
+            let numAsInt = Int(numbers[0])
+            if numAsInt <= 1 {
+                return 1.0
+            }
+            var result = 1.0
+            for i in 2...numAsInt {
+                result *= Double(i)
+            }
+            return result
+            default:
+                return 0.0
+        }
+    }
 }
+
 func calculate(_ arg: String) -> Double {
-    return -1.0
+    var op = ""
+    var numbers = [] as [Double]
+    for token in arg.split(separator: " ") {
+        if let number = Double(token) {
+            numbers.append(number)
+        } else {
+            op = String(token)
+        }
+    }
+    
+    guard !numbers.isEmpty else {
+        return 0.0
+    }
+    
+    if ["+", "-", "*", "/", "%"].contains(op) && numbers.count >= 2 {
+        var value = numbers[0]
+        switch op {
+        case "+":
+            value += numbers[1]
+        case "-":
+            value -= numbers[1]
+        case "*":
+            value *= numbers[1]
+        case "%":
+            if numbers[1] != 0 {
+                value = value.truncatingRemainder(dividingBy: numbers[1])
+            }
+        case "/":
+            if numbers[1] != 0 {
+                value /= numbers[1]
+            }
+        default:
+            value = 0
+        }
+        return Double(value)
+    } else {
+        switch op {
+            case "count":
+                return Double(numbers.count)
+        case "avg":
+            guard numbers.count > 0 else {
+                return 0
+            }
+            let sum = numbers.reduce(0, +)
+            return sum / Double(numbers.count)
+        case "fact":
+            guard !numbers.isEmpty else { return 0 }
+            let numAsInt = Int(numbers[0])
+            if numAsInt <= 1 {
+                return 1.0
+            }
+            var result = 1.0
+            for i in 2...numAsInt {
+                result *= Double(i)
+            }
+            return result
+            default:
+                return 0.0
+        }
+    }
 }
 
 calculate(["2.0", "+", "2.0"]) == 4.0
@@ -119,4 +355,3 @@ calculate(["2.5", "*", "2.5"]) == 6.25
 calculate(["2.0", "/", "2.0"]) == 1.0
 calculate(["2.0", "%", "2.0"]) == 0.0
 calculate("1.0 2.0 3.0 4.0 5.0 count") == 5.0
-*/
